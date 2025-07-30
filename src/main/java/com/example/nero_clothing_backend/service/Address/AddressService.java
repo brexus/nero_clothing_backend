@@ -13,7 +13,6 @@ public interface AddressService {
     List<AddressResponseDto> getAllAddresses();
     AddressResponseDto getAddressById(Long id);
     AddressResponseDto updatePartialAddress(Long id, AddressPatchDto reqDto);
-    AddressResponseDto updateFullAddress(Long id, AddressRequestDto reqDto);
     void deleteAddress(Long id);
 
 }

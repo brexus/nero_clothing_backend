@@ -29,6 +29,15 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    // address request dto
+    @ExceptionHandler(RequestIsEmptyException.class)
+    public ResponseEntity<ErrorResponseDto> handleRequestIsEmptyException(RequestIsEmptyException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(handleGenericException(ex, HttpStatus.BAD_REQUEST));
+    }
+
     // address
     @ExceptionHandler(AddressNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleAddressNotFound(AddressNotFoundException ex) {

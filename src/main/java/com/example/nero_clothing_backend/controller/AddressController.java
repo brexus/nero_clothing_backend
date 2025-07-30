@@ -39,7 +39,7 @@ public class AddressController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<AddressResponseDto> updateAddress(@Valid @PathVariable Long id, @RequestBody AddressPatchDto reqDto) {
+    public ResponseEntity<AddressResponseDto> updateAddress(@PathVariable Long id, @Valid @RequestBody AddressPatchDto reqDto) {
         AddressResponseDto res = addressService.updatePartialAddress(id, reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }

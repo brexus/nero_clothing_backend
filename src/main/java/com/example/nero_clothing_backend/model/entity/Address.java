@@ -13,17 +13,22 @@ import java.util.List;
 @NoArgsConstructor
 public class Address extends BaseModel {
 
-    @Column(unique = false, nullable = true)
+    @Column(nullable = false)
     private String street;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String building;
 
-    @Column(unique = false, nullable = true)
+    @Column(nullable = true)
     private String apartment;
 
+    @Column(nullable = false)
     private String zipCode;
+
+    @Column(nullable = false)
     private String city;
+
+    @Column(nullable = false)
     private String country;
 
     @ManyToOne

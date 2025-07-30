@@ -1,5 +1,6 @@
 package com.example.nero_clothing_backend.service.Address;
 
+import com.example.nero_clothing_backend.exception.RequestIsEmptyException;
 import com.example.nero_clothing_backend.model.dto.Address.AddressPatchDto;
 import com.example.nero_clothing_backend.model.dto.Address.AddressRequestDto;
 import com.example.nero_clothing_backend.model.dto.Address.AddressResponseDto;
@@ -50,42 +51,31 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressResponseDto updatePartialAddress(Long id, AddressPatchDto reqDto) {
-            Address oldAddress = addressRepository.findById(id).orElseThrow(() -> new AddressNotFoundException(id));
+        if(isPatchDtoEmpty(reqDto)) {
+            throw new RequestIsEmptyException("Request cannot be blank.");
+        }
 
-        if(reqDto.getStreet() != null) {
+        Address oldAddress = addressRepository.findById(id)
+                .orElseThrow(() -> new AddressNotFoundException(id));
+
+        if((reqDto.getStreet() != null) && !reqDto.getStreet().isEmpty()) {
             oldAddress.setStreet(reqDto.getStreet());
         }
-        if(reqDto.getBuilding() != null) {
+        if((reqDto.getBuilding() != null) && !reqDto.getBuilding().isEmpty()) {
             oldAddress.setBuilding(reqDto.getBuilding());
         }
-        if(reqDto.getApartment() != null) {
+        if((reqDto.getApartment() != null) && !reqDto.getApartment().isEmpty()) {
             oldAddress.setApartment(reqDto.getApartment());
         }
-        if(reqDto.getPostalCode() != null) {
-            oldAddress.setZipCode(reqDto.getPostalCode());
+        if((reqDto.getZipCode() != null) && !reqDto.getZipCode().isEmpty()) {
+            oldAddress.setZipCode(reqDto.getZipCode());
         }
-        if(reqDto.getCity() != null) {
+        if((reqDto.getCity() != null) && !reqDto.getCity().isEmpty()) {
             oldAddress.setCity(reqDto.getCity());
         }
-        if(reqDto.getCountry() != null) {
+        if((reqDto.getCountry() != null) && !reqDto.getCountry().isEmpty()) {
             oldAddress.setCountry(reqDto.getCountry());
         }
-        Address updatedAddress = addressRepository.save(oldAddress);
-
-        return AddressMapper.toDto(updatedAddress);
-    }
-
-    @Override
-    public AddressResponseDto updateFullAddress(Long id, AddressRequestDto reqDto) {
-        Address oldAddress = addressRepository.findById(id).orElseThrow(() -> new AddressNotFoundException(id));
-
-        oldAddress.setStreet(reqDto.getStreet());
-        oldAddress.setBuilding(reqDto.getBuilding());
-        oldAddress.setApartment(reqDto.getApartment());
-        oldAddress.setZipCode(reqDto.getZipCode());
-        oldAddress.setCity(reqDto.getCity());
-        oldAddress.setCountry(reqDto.getCountry());
-
         Address updatedAddress = addressRepository.save(oldAddress);
 
         return AddressMapper.toDto(updatedAddress);
@@ -96,5 +86,14 @@ public class AddressServiceImpl implements AddressService {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new AddressNotFoundException(id));
         addressRepository.delete(address);
+    }
+
+    private boolean isPatchDtoEmpty(AddressPatchDto reqDto) {
+        return (reqDto.getStreet() == null || reqDto.getStreet().isEmpty()) &&
+                (reqDto.getBuilding() == null || reqDto.getBuilding().isEmpty()) &&
+                (reqDto.getApartment() == null || reqDto.getApartment().isEmpty()) &&
+                (reqDto.getZipCode() == null || reqDto.getZipCode().isEmpty()) &&
+                (reqDto.getCity() == null || reqDto.getCity().isEmpty()) &&
+                (reqDto.getCountry() == null || reqDto.getCountry().isEmpty());
     }
 }
