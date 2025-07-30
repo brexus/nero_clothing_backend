@@ -6,21 +6,21 @@ import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Data;
 
-import static com.example.nero_clothing_backend.common.RegexConstants.CATEGORY;
+import static com.example.nero_clothing_backend.common.RegexConstants.*;
 
 @Data
 @Builder
 public class ProductPatchDto {
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]{3,50}$|^$", message = "Name can only contain letters, numbers, and spaces")
+    @Pattern(regexp = PRODUCT_NAME, message = "Name can only contain letters, numbers, and spaces")
     private String name;
 
-    @Pattern(regexp = "^[a-zA-Z0-9\\s]{3,50}$|^$", message = "Description can only contain letters, numbers, and spaces")
+    @Pattern(regexp = PRODUCT_DESCRIPTION, message = "Description can only contain letters, numbers, and spaces")
     private String description;
 
-    @Pattern(regexp = "^(\\d+\\.\\d{1,2}|\\d+)$|^$", message = "Price must be a valid number with up to two decimal places")
+    @Pattern(regexp = PRICE, message = "Price must be a valid number with up to two decimal places")
     private String price;
 
-    @Pattern(regexp = CATEGORY, message = "zła kategoria")
-    private CategoryEnum category;
+    @Pattern(regexp = PRODUCT_CATEGORY, message = "Invalid category. Must be one of: [TSHIRTS, HOODIES, BOTTOMS, ACCESSORIES]")
+    private String category;
 }

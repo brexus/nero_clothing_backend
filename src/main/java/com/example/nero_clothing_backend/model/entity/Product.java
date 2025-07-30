@@ -15,10 +15,16 @@ import java.util.List;
 @NoArgsConstructor
 public class Product extends BaseModel {
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private Double price;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CategoryEnum category;
 

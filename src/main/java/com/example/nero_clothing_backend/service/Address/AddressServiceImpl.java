@@ -1,6 +1,6 @@
 package com.example.nero_clothing_backend.service.Address;
 
-import com.example.nero_clothing_backend.exception.RequestIsEmptyException;
+import com.example.nero_clothing_backend.exception.CustomMessageException;
 import com.example.nero_clothing_backend.model.dto.Address.AddressPatchDto;
 import com.example.nero_clothing_backend.model.dto.Address.AddressRequestDto;
 import com.example.nero_clothing_backend.model.dto.Address.AddressResponseDto;
@@ -52,7 +52,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressResponseDto updatePartialAddress(Long id, AddressPatchDto reqDto) {
         if(isPatchDtoEmpty(reqDto)) {
-            throw new RequestIsEmptyException("Request cannot be blank.");
+            throw new CustomMessageException("Request cannot be blank.");
         }
 
         Address oldAddress = addressRepository.findById(id)

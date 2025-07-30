@@ -7,14 +7,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
-import static com.example.nero_clothing_backend.common.RegexConstants.PRODUCT_SIZE;
+//import static com.example.nero_clothing_backend.common.RegexConstants.PRODUCT_SIZE;
 import static com.example.nero_clothing_backend.common.RegexConstants.STOCK_QUANTITY;
 
 @Data
 @Builder
 public class ProductVariantRequestDto {
     @NotNull
-    @Pattern(regexp = PRODUCT_SIZE, message = "zły size")
+//    @Pattern(regexp = PRODUCT_SIZE, message = "zły size")
     private ProductSizeEnum size;
 
     private Integer stockQuantity;

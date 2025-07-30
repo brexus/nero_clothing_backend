@@ -1,10 +1,14 @@
 package com.example.nero_clothing_backend.service.Product;
 
+import com.example.nero_clothing_backend.exception.CustomMessageException;
+import com.example.nero_clothing_backend.mapper.ProductMapper;
+import com.example.nero_clothing_backend.model.dto.Address.AddressPatchDto;
 import com.example.nero_clothing_backend.model.dto.Product.ProductPatchDto;
 import com.example.nero_clothing_backend.model.dto.Product.ProductRequestDto;
 import com.example.nero_clothing_backend.model.dto.Product.ProductResponseDto;
 import com.example.nero_clothing_backend.exception.ProductNotFoundException;
 import com.example.nero_clothing_backend.model.entity.Product;
+import com.example.nero_clothing_backend.model.enums.CategoryEnum;
 import com.example.nero_clothing_backend.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,25 +23,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDto createProduct(ProductRequestDto reqDto) {
-
-        Product product = Product.builder()
-                .name(reqDto.getName())
-                .description(reqDto.getDescription())
-                .price(reqDto.getPrice() != null ? Double.parseDouble(reqDto.getPrice()) : null)
-                .category(reqDto.getCategory())
-                .build();
-
+        Product product = ProductMapper.toEntity(reqDto);
         Product savedProduct = productRepository.save(product);
 
-        return ProductResponseDto.builder()
-                .id(savedProduct.getId())
-                .name(savedProduct.getName())
-                .description(savedProduct.getDescription())
-                .price(savedProduct.getPrice())
-                .category(savedProduct.getCategory())
-                .createdAt(savedProduct.getCreatedAt())
-                .updatedAt(savedProduct.getUpdatedAt())
-                .build();
+        return ProductMapper.toDto(savedProduct);
     }
 
     @Override
@@ -45,30 +34,14 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
-        return ProductResponseDto.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .description(product.getDescription())
-                .price(product.getPrice())
-                .category(product.getCategory())
-                .createdAt(product.getCreatedAt())
-                .updatedAt(product.getUpdatedAt())
-                .build();
+        return ProductMapper.toDto(product);
     }
 
     @Override
     public List<ProductResponseDto> getAllProducts() {
         List<ProductResponseDto> productList = productRepository.findAll()
                 .stream()
-                .map(product -> ProductResponseDto.builder()
-                        .id(product.getId())
-                        .name(product.getName())
-                        .description(product.getDescription())
-                        .price(product.getPrice())
-                        .category(product.getCategory())
-                        .createdAt(product.getCreatedAt())
-                        .updatedAt(product.getUpdatedAt())
-                        .build())
+                .map(ProductMapper::toDto)
                 .toList();
 
         return productList;
@@ -84,33 +57,44 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDto updatePartialProduct(Long id, ProductPatchDto reqDto) {
+        if(isPatchDtoEmpty(reqDto)) {
+            throw new CustomMessageException("Request cannot be blank.");
+        }
+
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
-        if (reqDto.getName() != null) {
+        if (reqDto.getName() != null && !reqDto.getName().isEmpty()) {
             product.setName(reqDto.getName());
         }
-        if (reqDto.getDescription() != null) {
+        if (reqDto.getDescription() != null && !reqDto.getDescription().isEmpty()) {
             product.setDescription(reqDto.getDescription());
         }
-        if (reqDto.getPrice() != null) {
+        if (reqDto.getPrice() != null && !reqDto.getPrice().isEmpty()) {
             product.setPrice(Double.parseDouble(reqDto.getPrice()));
         }
-        if (reqDto.getCategory() != null) {
-            product.setCategory(reqDto.getCategory());
+        if (reqDto.getCategory() != null && !reqDto.getCategory().isEmpty()) {
+
+            CategoryEnum enumCategory;
+            try {
+                enumCategory = CategoryEnum.valueOf(reqDto.getCategory().toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                throw new CustomMessageException("Invalid category: " + (reqDto.getCategory()));
+            }
+
+            product.setCategory(enumCategory);
         }
 
         Product updatedProduct = productRepository.save(product);
 
-        return ProductResponseDto.builder()
-                .id(updatedProduct.getId())
-                .name(updatedProduct.getName())
-                .description(updatedProduct.getDescription())
-                .price(updatedProduct.getPrice())
-                .category(product.getCategory())
-                .createdAt(product.getCreatedAt())
-                .updatedAt(product.getUpdatedAt())
-                .build();
+        return ProductMapper.toDto(updatedProduct);
+    }
+
+    private boolean isPatchDtoEmpty(ProductPatchDto reqDto) {
+        return (reqDto.getName() == null || reqDto.getName().isEmpty()) &&
+                (reqDto.getDescription() == null || reqDto.getDescription().isEmpty()) &&
+                (reqDto.getPrice() == null || reqDto.getPrice().isEmpty()) &&
+                (reqDto.getCategory() == null || reqDto.getCategory().isEmpty());
     }
 
 
