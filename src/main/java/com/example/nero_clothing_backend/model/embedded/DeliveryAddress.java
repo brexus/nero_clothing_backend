@@ -9,7 +9,11 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Embeddable
+@Embeddable //nw co  z tym
+/*
+ale poczytalem troche o tym i chyba to jest ok
+juz kumam ocb z tym co mowiles ze sie bedzie kopiowal i zmienial itd
+ */
 public class DeliveryAddress {
     private String street;
     private String building;

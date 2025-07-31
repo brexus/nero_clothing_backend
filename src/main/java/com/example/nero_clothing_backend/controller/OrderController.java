@@ -16,7 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
 
-    public final OrderService orderService;
+    //private
+    private final OrderService orderService;
 
     @PostMapping("/")
     public ResponseEntity<OrderResponseDto> createOrder(@Valid @RequestBody OrderRequestDto reqDto) {
@@ -29,6 +30,4 @@ public class OrderController {
         OrderResponseDto resDto = orderService.updatePartialOrder(reqDto, id);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
-
-
 }

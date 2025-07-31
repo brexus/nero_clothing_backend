@@ -11,6 +11,7 @@ import com.example.nero_clothing_backend.repository.ProductVariantRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     private final ProductRepository productRepository;
 
     @Override
+    @Transactional
     public ProductVariantResponseDto createProductVariant(ProductVariantRequestDto reqDto) {
 
         ProductVariant productVariant = ProductVariantMapper.toEntity(reqDto);

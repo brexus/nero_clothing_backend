@@ -33,6 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/")
+    // to pewnie planuejsz ale paginacja/sortowanie w przyszlosci
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
        List<UserResponseDto> users = userService.getAllUsers();
        return ResponseEntity.status(HttpStatus.OK).body(users);
@@ -49,6 +50,4 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User with id " + id + " deleted successfully"));
     }
-
-
 }

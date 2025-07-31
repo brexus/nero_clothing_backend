@@ -21,6 +21,8 @@ public class OrderItem extends BaseModel {
 
     private Integer quantity;
     private Double unitPrice;
+    //calculate using adnotaion:
+
     private Double totalPrice; // quantity * unitPrice
 
 }

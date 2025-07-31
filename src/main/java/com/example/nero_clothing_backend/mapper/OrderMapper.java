@@ -15,7 +15,7 @@ import java.util.List;
 public class OrderMapper {
     public static Order toEntity(OrderRequestDto reqDto) {
 
-        if (reqDto == null) {
+        if (reqDto == null) { // tutaj tak samo masz to @Valid + nawet jesli by nie bylo to wczesniej sprawdzasz
             return null;
         }
 
@@ -28,7 +28,7 @@ public class OrderMapper {
                 .country(reqDto.getDeliveryCountry())
                 .build();
 
-        Order order = Order.builder()
+        return Order.builder()
                 .user(null)
                 .totalAmount(null) // do obliczenia
                 .status(null) // od ustawienia
@@ -38,8 +38,6 @@ public class OrderMapper {
                 .items(null) // do ustawienia
                 .deliveryAddress(address)
                 .build();
-
-        return order;
     }
 
     public static OrderResponseDto toDto(Order order) {

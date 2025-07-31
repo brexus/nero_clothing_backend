@@ -10,6 +10,7 @@ import com.example.nero_clothing_backend.exception.ProductNotFoundException;
 import com.example.nero_clothing_backend.model.entity.Product;
 import com.example.nero_clothing_backend.model.enums.CategoryEnum;
 import com.example.nero_clothing_backend.repository.ProductRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,27 +40,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponseDto> getAllProducts() {
-        List<ProductResponseDto> productList = productRepository.findAll()
+        return productRepository.findAll()
                 .stream()
                 .map(ProductMapper::toDto)
                 .toList();
-
-        return productList;
     }
 
     @Override
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
-
+// tutaj ta kwestia soft delete jakbys chcial
         productRepository.delete(product);
     }
 
     @Override
     public ProductResponseDto updatePartialProduct(Long id, ProductPatchDto reqDto) {
+        // w kontrolerze masz @Valid
         if(isPatchDtoEmpty(reqDto)) {
             throw new CustomMessageException("Request cannot be blank.");
         }
+
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
@@ -75,6 +76,7 @@ public class ProductServiceImpl implements ProductService {
         }
         if (reqDto.getCategory() != null && !reqDto.getCategory().isEmpty()) {
 
+            // tutaj tez case z enumem i doublem, w dto lepiej
             CategoryEnum enumCategory;
             try {
                 enumCategory = CategoryEnum.valueOf(reqDto.getCategory().toUpperCase());

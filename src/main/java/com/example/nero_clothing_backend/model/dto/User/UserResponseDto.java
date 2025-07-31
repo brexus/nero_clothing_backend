@@ -24,7 +24,7 @@ public class UserResponseDto {
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
+    private String password; // !!!!!!! :D
     private String phoneNumber;
     private Long roleId;
     private List<Address> addressList;

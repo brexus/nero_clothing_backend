@@ -49,5 +49,4 @@ public class AddressController {
         addressService.deleteAddress(id);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Address with id " + id + " deleted successfully."));
     }
-
 }
