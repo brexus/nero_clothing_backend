@@ -20,10 +20,12 @@ public class ProductController {
 
     private final ProductService productService;
 
+    //metody w kotrolerze PUBLIC !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @PostMapping("/")
-    private ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody ProductRequestDto reqDto) {
+    public ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody ProductRequestDto reqDto) {
         ProductResponseDto resDto = productService.createProduct(reqDto);
-        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+        //przyjebka ale CREATED zmaiast OK
+        return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
 
     @GetMapping("/{id}")
@@ -49,5 +51,4 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Product with id " + id + " deleted successfully."));
     }
-
 }

@@ -7,15 +7,12 @@ import com.example.nero_clothing_backend.model.entity.OrderItem;
 public class OrderItemMapper {
 
     public static OrderItem toEntity(OrderItemRequestDto reqDto) {
-
-        OrderItem orderItem = OrderItem.builder()
+        return OrderItem.builder()
                 .quantity(reqDto.getQuantity())
                 .productVariant(null)
                 .totalPrice(null)
                 .order(null)
                 .build();
-
-        return orderItem;
     }
 
     public static OrderItemResponseDto toDto(OrderItem orderItem) {

@@ -20,5 +20,4 @@ public class ProductVariant extends BaseModel {
     @ManyToOne
     @JoinColumn(name = "product_id" ,referencedColumnName = "id")
     private Product product;
-
 }

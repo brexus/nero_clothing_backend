@@ -18,13 +18,13 @@ public class ProductImageController {
     private final ProductImageService productImageService;
 
     @PostMapping("/")
-    private ResponseEntity<ProductImageResponseDto> createProductImage(@RequestBody ProductImageRequestDto reqDto) {
+    public ResponseEntity<ProductImageResponseDto> createProductImage(@RequestBody ProductImageRequestDto reqDto) {
         ProductImageResponseDto resDto = productImageService.createProductImage(reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<ProductImageResponseDto> getProductImageById(@PathVariable Long id) {
+    public ResponseEntity<ProductImageResponseDto> getProductImageById(@PathVariable Long id) {
         ProductImageResponseDto resDto = productImageService.getProductImageById(id);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
@@ -46,5 +46,4 @@ public class ProductImageController {
         productImageService.deleteProductImage(id);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Product image with id " + id + " deleted successfully"));
     }
-
 }

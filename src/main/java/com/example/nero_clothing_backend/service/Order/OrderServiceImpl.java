@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponseDto createOrder(OrderRequestDto reqDto) {
-        if(reqDto == null) {
+        if(reqDto == null) { // chyba jak @Valid w kontrolerze to nie bedzie null nigdy
             return null;
         }
 
@@ -51,6 +51,8 @@ public class OrderServiceImpl implements OrderService {
 
 
             // (B). Check stock availability
+            // i tutaj bardzo wazne jest uzycie transcational, bo majac np 1000 userów
+            // kilku w tym samym czasie moze zlozyc zamowienie na ten sam produkt i wtedy chujnia jak sie to wykona rownolegle
             if(productVariant.getStockQuantity() < item.getQuantity()) {
                 throw new InsufficientStockException(item.getProductVariantId(), productVariant.getStockQuantity(), item.getQuantity());
             }
@@ -61,6 +63,10 @@ public class OrderServiceImpl implements OrderService {
 
             // (D). OrderItem Request DTO -> Entity
             Double unitPrice = productVariant.getProduct().getPrice();
+// ogolnie to zjebane ale Double i Float są chujowe do cen i ogolnie są chujowe
+          //  https://dzone.com/articles/never-use-float-and-double-for-monetary-calculatio
+            // najlepsza opcja imo to przechowywanie w Long jako groszach i tylko przy wyswietlaniu na froncie dzielenie na 100
+            // albo zwracac w DTO jako String z dwoma miejscami po przecinku juz gotowe
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
@@ -105,10 +111,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Boolean hasSufficientStock(ProductVariant productVariant, Integer requestQuantity) {
-        if(productVariant.getStockQuantity() >= requestQuantity) {
-            return true;
-        } else {
-            return false;
-        }
+        return productVariant.getStockQuantity() >= requestQuantity;
     }
 }

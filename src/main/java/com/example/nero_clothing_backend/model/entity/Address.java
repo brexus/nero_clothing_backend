@@ -11,15 +11,17 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "adress") // tutaj tez dawaj nazwe tabeli
 public class Address extends BaseModel {
 
-    @Column(nullable = false)
+    //daj wszedzie name=
+    @Column(name = "street",nullable = false)
     private String street;
 
-    @Column(nullable = false)
+    @Column(name="building",nullable = false)
     private String building;
 
-    @Column(nullable = true)
+    @Column(name = "apartment")
     private String apartment;
 
     @Column(nullable = false)
@@ -31,9 +33,10 @@ public class Address extends BaseModel {
     @Column(nullable = false)
     private String country;
 
+    // przekmin czy potrzebne bedzie, czy moze nie przechowywac samego id
+//    @Column(name = "user_id", nullable = false)
+//    private Long userId;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-
-
 }

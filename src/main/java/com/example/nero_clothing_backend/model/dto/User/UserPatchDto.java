@@ -20,6 +20,8 @@ public class UserPatchDto {
     @Pattern(regexp = "^[A-Za-ząĄćĆęĘłŁńŃóÓśŚżŻźŹ\\s-]{3,80}$", message = "Incorrect last name.")
     private String lastName;
 
+    //daj zamiast regexa
+    //@Email(message = "Incorrect email format.")
     @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$", message = "Incorrect email format.")
     private String email;
 
@@ -31,5 +33,4 @@ public class UserPatchDto {
 
     @Positive
     private Long roleId;
-
 }

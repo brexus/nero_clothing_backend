@@ -44,12 +44,9 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     public List<ProductImageResponseDto> getAllProductImages() {
-
-        List<ProductImageResponseDto> imgList = productImageRepository.findAll().stream()
+        return productImageRepository.findAll().stream()
                 .map(ProductImageMapper::toDto)
                 .toList();
-
-        return imgList;
     }
 
     @Override

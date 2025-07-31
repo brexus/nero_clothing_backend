@@ -14,6 +14,12 @@ public class ProductMapper {
             return null;
         }
 
+        // w maperze imo nie powinno byc zadnej walidacji danych, powinien tylko i wylacznie mapowac
+        //duzo lepiej by było zmienic w ProductRequestDto category po prostu na enuma, zamiast stringa z regexem
+        // na enum i wtedy nie trzeba by było tego sprawdzac, spring sobie z tym poradzi
+        // plus kwestia ze jak dodasz nowego enuma to trzeba bedzie w kilku miejscach zmieniac kod
+
+
         CategoryEnum enumCategory;
         try {
             enumCategory = CategoryEnum.valueOf(reqDto.getCategory().toUpperCase());
@@ -21,7 +27,8 @@ public class ProductMapper {
             throw new CustomMessageException("Invalid category: " + (reqDto.getCategory()));
         }
 
-
+// tutaj tak samo (wsm wczesniej jak ci pisalem nie zajrzalem glebiej)
+//  spring poradzi z  JSON -> Double i JSON -> Enum. Jak ktoś da złą kategorię albo zlego double to dostanie Bad Request automatycznie.
         Double price;
         try {
             price = Double.parseDouble(reqDto.getPrice());

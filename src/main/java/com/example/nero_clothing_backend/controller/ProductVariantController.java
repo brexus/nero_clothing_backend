@@ -25,5 +25,4 @@ public class ProductVariantController {
         ProductVariantResponseDto resDto = productVariantService.createProductVariant(reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
-
 }

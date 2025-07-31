@@ -31,11 +31,9 @@ public class User extends BaseModel {
     private Role role;
 
     @OneToMany(mappedBy = "user")
+    // to jako zapisane adresy uzytkownika, takie do szybkiego wyboru przy skladaniu zamowienia?
     private List<Address> addressList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Order> orders;
-
-
-
 }
