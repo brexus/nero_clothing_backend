@@ -16,6 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/product")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ProductController {
 
     private final ProductService productService;
@@ -35,6 +36,18 @@ public class ProductController {
     @GetMapping("/")
     private ResponseEntity<List<ProductResponseDto>> getAllProducts() {
         List<ProductResponseDto> resDto = productService.getAllProducts();
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+    }
+
+    @GetMapping("/variant-quantities/{id}")
+    private ResponseEntity<Map<String, Integer>> getProductVariantQuantitiesByProductId(@PathVariable Long id) {
+        Map<String, Integer> res = productService.getProductVariantQuantitiesByProductId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
+
+    @GetMapping("/category")
+    private ResponseEntity<List<ProductResponseDto>> getProductsByCategory(@RequestParam String category) {
+        List<ProductResponseDto> resDto = productService.getProductsByCategory(category);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 

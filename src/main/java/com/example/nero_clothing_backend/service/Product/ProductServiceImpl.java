@@ -1,6 +1,7 @@
 package com.example.nero_clothing_backend.service.Product;
 
 import com.example.nero_clothing_backend.exception.CustomMessageException;
+import com.example.nero_clothing_backend.exception.ProductVariantNotFound;
 import com.example.nero_clothing_backend.mapper.ProductMapper;
 import com.example.nero_clothing_backend.model.dto.Address.AddressPatchDto;
 import com.example.nero_clothing_backend.model.dto.Product.ProductPatchDto;
@@ -8,18 +9,23 @@ import com.example.nero_clothing_backend.model.dto.Product.ProductRequestDto;
 import com.example.nero_clothing_backend.model.dto.Product.ProductResponseDto;
 import com.example.nero_clothing_backend.exception.ProductNotFoundException;
 import com.example.nero_clothing_backend.model.entity.Product;
+import com.example.nero_clothing_backend.model.entity.ProductVariant;
 import com.example.nero_clothing_backend.model.enums.CategoryEnum;
 import com.example.nero_clothing_backend.repository.ProductRepository;
+import com.example.nero_clothing_backend.repository.ProductVariantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductVariantRepository productVariantRepository;
 
     @Override
     public ProductResponseDto createProduct(ProductRequestDto reqDto) {
@@ -88,6 +94,39 @@ public class ProductServiceImpl implements ProductService {
         Product updatedProduct = productRepository.save(product);
 
         return ProductMapper.toDto(updatedProduct);
+    }
+
+    @Override
+    public List<ProductResponseDto> getProductsByCategory(String category) {
+        CategoryEnum enumCategory;
+
+        try {
+            enumCategory = CategoryEnum.valueOf(category.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new CustomMessageException("Invalid category: " + category);
+        }
+
+        return productRepository.findByCategory(enumCategory)
+                .stream()
+                .map(ProductMapper::toDto)
+                .toList();
+
+    }
+
+    @Override
+    public Map<String,Integer> getProductVariantQuantitiesByProductId(Long id) {
+
+        List<ProductVariant> productVariantList = productVariantRepository.findByProductId(id);
+
+        if (productVariantList.isEmpty()) {
+            throw new ProductVariantNotFound(id);
+        }
+
+        return productVariantList.stream()
+                .collect(Collectors.toMap(
+                        variant -> variant.getSize() + "_size",
+                        ProductVariant::getStockQuantity
+                ));
     }
 
     private boolean isPatchDtoEmpty(ProductPatchDto reqDto) {

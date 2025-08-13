@@ -32,7 +32,7 @@ public class Product extends BaseModel {
     private List<ProductImage> productImages;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<ProductVariant> productVariantList = new ArrayList<>();
+    private List<ProductVariant> productVariantList;
 
 
 }
