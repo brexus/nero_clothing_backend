@@ -3,8 +3,13 @@ package com.example.nero_clothing_backend.service.ProductImage;
 import com.example.nero_clothing_backend.model.dto.ProductImage.ProductImageRequestDto;
 import com.example.nero_clothing_backend.model.dto.ProductImage.ProductImageResponseDto;
 import com.example.nero_clothing_backend.mapper.ProductImageMapper;
+import com.example.nero_clothing_backend.model.entity.Product;
 import com.example.nero_clothing_backend.model.entity.ProductImage;
+import com.example.nero_clothing_backend.model.entity.ProductVariant;
 import com.example.nero_clothing_backend.repository.ProductImageRepository;
+import com.example.nero_clothing_backend.repository.ProductRepository;
+import com.example.nero_clothing_backend.repository.ProductVariantRepository;
+import com.example.nero_clothing_backend.service.ProductVariant.ProductVariantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductImageServiceImpl implements ProductImageService {
 
+    private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
 
     @Override
@@ -25,21 +31,23 @@ public class ProductImageServiceImpl implements ProductImageService {
 //                .product(null) // Product will be set later if needed
                 .build();
 
-//        Product product = productRepository.findById(productImage.getId())
-//                .orElseThrow(() -> new RuntimeException("Product not found with id: " + product.getId()));
+        Product product = productRepository.findById(reqDto.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + reqDto.getProductId()));
 
-//        productImage.setProduct(product);
+        productImage.setProduct(product); // Set the product variant
+
         ProductImage savedImage = productImageRepository.save(productImage);
 
         return ProductImageMapper.toDto(savedImage);
     }
 
     @Override
-    public ProductImageResponseDto getProductImageById(Long id) {
-        ProductImage prodImg = productImageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product image not found with id: " + id));
+    public List<ProductImageResponseDto> getProductImagesByProductId(Long productVariantId) {
+        List<ProductImageResponseDto> imgList = productImageRepository.findByProductId(productVariantId).stream()
+                .map(ProductImageMapper::toDto)
+                .toList();
 
-        return ProductImageMapper.toDto(prodImg);
+        return imgList;
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.List;
 public interface ProductImageService {
 
     ProductImageResponseDto createProductImage(ProductImageRequestDto reqDto);
-    ProductImageResponseDto getProductImageById(Long id);
+    List<ProductImageResponseDto> getProductImagesByProductId(Long productVariantId);
     List<ProductImageResponseDto> getAllProductImages();
     ProductImageResponseDto updatePartialProductImage(Long id, ProductImageRequestDto reqDto);
     void deleteProductImage(Long id);

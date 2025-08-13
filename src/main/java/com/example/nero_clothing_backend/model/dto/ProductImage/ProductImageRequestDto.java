@@ -1,6 +1,7 @@
 package com.example.nero_clothing_backend.model.dto.ProductImage;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,8 @@ public class ProductImageRequestDto {
     @Size(min = 3, max = 100, message = "Alt text must be between 3 and 100 characters.")
     private String altText;
 
-//    private Long productId;
+    @NotNull
+    @Positive
+    private Long productId;
 
 }

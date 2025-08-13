@@ -14,6 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/product/image")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ProductImageController {
     private final ProductImageService productImageService;
 
@@ -23,10 +24,11 @@ public class ProductImageController {
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
+    // O TOOOOOOOOOOO!!!!!!!!!!!!!!!!!
     @GetMapping("/{id}")
-    private ResponseEntity<ProductImageResponseDto> getProductImageById(@PathVariable Long id) {
-        ProductImageResponseDto resDto = productImageService.getProductImageById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+    private ResponseEntity<List<ProductImageResponseDto>>getProductImagesByProductId(@PathVariable Long id) {
+        List<ProductImageResponseDto> imgList = productImageService.getProductImagesByProductId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(imgList);
     }
 
     @GetMapping("/")
