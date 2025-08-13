@@ -1,25 +1,26 @@
 package com.example.nero_clothing_backend.model.dto.ProductVariant;
 
 import com.example.nero_clothing_backend.model.enums.ProductSizeEnum;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-//import static com.example.nero_clothing_backend.common.RegexConstants.PRODUCT_SIZE;
-import static com.example.nero_clothing_backend.common.RegexConstants.STOCK_QUANTITY;
 
-@Data
+@Getter
+@Setter
 @Builder
 public class ProductVariantRequestDto {
-    @NotNull
-//    @Pattern(regexp = PRODUCT_SIZE, message = "zły size")
-    private ProductSizeEnum size;
+    @NotBlank(message = "Product size is required.")
+//    @Pattern(regexp = PRODUCT_VARIANT_SIZE, message = "Size must be one of: [XS, S, M, L, XL].")
+    private String size;
 
+    @NotNull(message = "Stock quantity is required.")
+    @Positive(message = "Stock quantity must be a positive integer.")
     private Integer stockQuantity;
 
-    @NotNull
+    @NotNull(message = "Product id is required.")
+    @Positive(message = "Product id must be a positive number.")
     private Long productId;
 
 }

@@ -17,7 +17,7 @@ public class ProductVariantResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private ProductSizeEnum size;
+    private String size;
     private Integer stockQuantity;
     private Long productId;
 
