@@ -8,20 +8,18 @@ public class OrderItemMapper {
 
     public static OrderItem toEntity(OrderItemRequestDto reqDto) {
 
-        OrderItem orderItem = OrderItem.builder()
+        return OrderItem.builder()
                 .quantity(reqDto.getQuantity())
                 .productVariant(null)
                 .totalPrice(null)
-                .order(null)
+                .customerOrder(null)
                 .build();
-
-        return orderItem;
     }
 
     public static OrderItemResponseDto toDto(OrderItem orderItem) {
 
         return OrderItemResponseDto.builder()
-                .orderId(orderItem.getOrder().getId())
+                .orderId(orderItem.getCustomerOrder().getId())
                 .quantity(orderItem.getQuantity())
                 .productVariantId(orderItem.getProductVariant().getId())
                 .totalPrice(orderItem.getTotalPrice())

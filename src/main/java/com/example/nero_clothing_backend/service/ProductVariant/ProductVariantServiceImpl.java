@@ -4,26 +4,26 @@ import com.example.nero_clothing_backend.exception.CustomMessageException;
 import com.example.nero_clothing_backend.exception.ProductNotFoundException;
 import com.example.nero_clothing_backend.exception.ProductVariantNotFoundException;
 import com.example.nero_clothing_backend.mapper.ProductVariantMapper;
-import com.example.nero_clothing_backend.model.dto.Address.AddressPatchDto;
 import com.example.nero_clothing_backend.model.dto.ProductVariant.ProductVariantPatchDto;
 import com.example.nero_clothing_backend.model.dto.ProductVariant.ProductVariantRequestDto;
 import com.example.nero_clothing_backend.model.dto.ProductVariant.ProductVariantResponseDto;
 import com.example.nero_clothing_backend.model.entity.Product;
 import com.example.nero_clothing_backend.model.entity.ProductVariant;
-import com.example.nero_clothing_backend.model.enums.ProductSizeEnum;
+import com.example.nero_clothing_backend.repository.ProductImageRepository;
 import com.example.nero_clothing_backend.repository.ProductRepository;
 import com.example.nero_clothing_backend.repository.ProductVariantRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class ProductVariantServiceImpl implements ProductVariantService {
     private final ProductVariantRepository productVariantRepository;
     private final ProductRepository productRepository;
+    private final ProductImageRepository productImageRepository;
 
     @Override
     public ProductVariantResponseDto createProductVariant(ProductVariantRequestDto reqDto) {
@@ -85,8 +85,8 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         if ((reqDto.getStockQuantity() != null) && (!reqDto.getStockQuantity().toString().isEmpty())) {
             productVariant.setStockQuantity(reqDto.getStockQuantity());
         }
-        if ((reqDto.getSize() != null) && (!reqDto.getSize().toString().isEmpty())) {
-            productVariant.setSize(ProductSizeEnum.valueOf(reqDto.getSize().toUpperCase()));
+        if (reqDto.getSize() != null) {
+            productVariant.setSize(reqDto.getSize());
         }
 
         ProductVariant savedProductVariant = productVariantRepository.save(productVariant);
@@ -108,8 +108,28 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     }
 
 
+    @Override
+    public Map<String, String> getBasicInfoOfProductVariantById(Long id) {
+
+        ProductVariant productVariant = productVariantRepository.findById(id).orElseThrow(() -> new ProductVariantNotFoundException(id));
+        Product product = productVariant.getProduct();
+
+        String imageUrl = productImageRepository.findByProductId(product.getId()).getFirst().getImageUrl();
+
+        return Map.of(
+                "productVariantId", productVariant.getId().toString(),
+                "productId", product.getId().toString(),
+                "name", product.getName(),
+                "size", productVariant.getSize().toString(),
+                "imageUrl", imageUrl,
+                "productPrice", product.getPrice().toString()
+        );
+
+    }
+
+
     private boolean isPatchDtoEmpty(ProductVariantPatchDto reqDto) {
-        return (reqDto.getSize() == null || reqDto.getSize().isEmpty()) &&
+        return (reqDto.getSize() == null) &&
                 (reqDto.getStockQuantity() == null) &&
                 (reqDto.getProductId() == null);
     }

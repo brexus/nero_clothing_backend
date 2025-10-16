@@ -1,9 +1,7 @@
 package com.example.nero_clothing_backend.model.dto.ProductVariant;
 
 import com.example.nero_clothing_backend.model.enums.ProductSizeEnum;
-import jakarta.validation.constraints.Size;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +15,7 @@ public class ProductVariantResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private String size;
+    private ProductSizeEnum size;
     private Integer stockQuantity;
     private Long productId;
 

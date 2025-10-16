@@ -1,19 +1,18 @@
 package com.example.nero_clothing_backend.model.dto.ProductVariant;
 
 import com.example.nero_clothing_backend.model.enums.ProductSizeEnum;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
 
 @Getter
 @Setter
 @Builder
 public class ProductVariantRequestDto {
-    @NotBlank(message = "Product size is required.")
-//    @Pattern(regexp = PRODUCT_VARIANT_SIZE, message = "Size must be one of: [XS, S, M, L, XL].")
-    private String size;
+    @NotNull(message = "Product size is required.")
+    private ProductSizeEnum size;
 
     @NotNull(message = "Stock quantity is required.")
     @Positive(message = "Stock quantity must be a positive integer.")

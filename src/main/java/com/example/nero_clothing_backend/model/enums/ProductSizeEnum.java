@@ -5,5 +5,6 @@ public enum ProductSizeEnum {
     S,
     M,
     L,
-    XL
+    XL,
+    ONE_SIZE
 }

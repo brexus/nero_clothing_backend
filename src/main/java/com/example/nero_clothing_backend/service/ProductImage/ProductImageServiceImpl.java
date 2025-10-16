@@ -1,15 +1,12 @@
 package com.example.nero_clothing_backend.service.ProductImage;
 
+import com.example.nero_clothing_backend.mapper.ProductImageMapper;
 import com.example.nero_clothing_backend.model.dto.ProductImage.ProductImageRequestDto;
 import com.example.nero_clothing_backend.model.dto.ProductImage.ProductImageResponseDto;
-import com.example.nero_clothing_backend.mapper.ProductImageMapper;
 import com.example.nero_clothing_backend.model.entity.Product;
 import com.example.nero_clothing_backend.model.entity.ProductImage;
-import com.example.nero_clothing_backend.model.entity.ProductVariant;
 import com.example.nero_clothing_backend.repository.ProductImageRepository;
 import com.example.nero_clothing_backend.repository.ProductRepository;
-import com.example.nero_clothing_backend.repository.ProductVariantRepository;
-import com.example.nero_clothing_backend.service.ProductVariant.ProductVariantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +25,12 @@ public class ProductImageServiceImpl implements ProductImageService {
         ProductImage productImage = ProductImage.builder()
                 .imageUrl(reqDto.getImageUrl())
                 .altText(reqDto.getAltText())
-//                .product(null) // Product will be set later if needed
                 .build();
 
         Product product = productRepository.findById(reqDto.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + reqDto.getProductId()));
 
-        productImage.setProduct(product); // Set the product variant
+        productImage.setProduct(product);
 
         ProductImage savedImage = productImageRepository.save(productImage);
 
@@ -62,13 +58,13 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     public ProductImageResponseDto updatePartialProductImage(Long id, ProductImageRequestDto reqDto) {
-         ProductImage productImage = productImageRepository.findById(id)
+        ProductImage productImage = productImageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product image not found with id: " + id));
 
-         if(reqDto.getImageUrl() != null) {
-             productImage.setImageUrl(reqDto.getImageUrl());
-         }
-        if(reqDto.getAltText() != null) {
+        if (reqDto.getImageUrl() != null) {
+            productImage.setImageUrl(reqDto.getImageUrl());
+        }
+        if (reqDto.getAltText() != null) {
             productImage.setAltText(reqDto.getAltText());
         }
 

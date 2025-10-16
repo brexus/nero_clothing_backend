@@ -12,15 +12,25 @@ import lombok.*;
 public class OrderItem extends BaseModel {
 
     @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Order order;
+    @JoinColumn(name = "customer_order_id", referencedColumnName = "id")
+    private CustomerOrder customerOrder;
 
     @ManyToOne
     @JoinColumn(name = "product_variant_id", referencedColumnName = "id")
     private ProductVariant productVariant;
 
     private Integer quantity;
-    private Double unitPrice;
-    private Double totalPrice; // quantity * unitPrice
+    private Long unitPrice;
+    private Long totalPrice; // quantity * unitPrice
+
+    @PrePersist
+    @PreUpdate
+    private void calculateTotalPrice() {
+        if (quantity != null && unitPrice != null) {
+            this.totalPrice = quantity * unitPrice;
+        } else {
+            this.totalPrice = 0L;
+        }
+    }
 
 }

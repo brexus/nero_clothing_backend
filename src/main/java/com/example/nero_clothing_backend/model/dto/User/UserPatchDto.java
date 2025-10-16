@@ -1,15 +1,9 @@
 package com.example.nero_clothing_backend.model.dto.User;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import java.security.Timestamp;
-
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
 @Builder

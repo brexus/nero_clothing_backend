@@ -14,16 +14,16 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductVariant extends BaseModel {
 
+    @ManyToOne
+    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
+    private Product product;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ProductSizeEnum size;
 
     @Column(nullable = false)
     private Integer stockQuantity;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id" ,referencedColumnName = "id", nullable = false)
-    private Product product;
 
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;

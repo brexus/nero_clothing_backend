@@ -1,16 +1,14 @@
 package com.example.nero_clothing_backend.model.dto.Product;
 
 import com.example.nero_clothing_backend.model.enums.CategoryEnum;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Data;
 
-import static com.example.nero_clothing_backend.common.RegexConstants.*;
+import static com.example.nero_clothing_backend.common.RegexConstants.PRODUCT_DESCRIPTION;
+import static com.example.nero_clothing_backend.common.RegexConstants.PRODUCT_NAME;
 
 @Data
 @Builder
@@ -25,11 +23,10 @@ public class ProductRequestDto {
     private String description;
 
     @NotBlank(message = "Price is required.")
-    @Pattern(regexp = PRICE, message = "Price must be a valid number with up to two decimal places")
-    private String price;
+    @Positive(message = "Price must be a positive number.")
+    private Long price;
 
     @NotBlank(message = "Product category description is required.")
-    @Pattern(regexp = PRODUCT_CATEGORY, message = "Invalid category. Must be one of: [TSHIRTS, HOODIES, BOTTOMS, ACCESSORIES]")
-    private String category;
+    private CategoryEnum category;
 
 }

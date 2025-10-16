@@ -11,7 +11,6 @@ import lombok.Data;
 public class ProductImageRequestDto {
 
     @NotNull
-//    @URL(protocol = "https", message = "Invalid URL format.")
     private String imageUrl;
 
     @NotNull

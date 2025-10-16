@@ -1,9 +1,8 @@
 package com.example.nero_clothing_backend.model.entity;
 
+import com.example.nero_clothing_backend.model.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Builder
@@ -19,23 +18,14 @@ public class User extends BaseModel {
     @Column(unique = true)
     private String email;
 
-//    @Column(unique = true)
-    private String phoneNumber;
-
     private String password;
 
-    //private String role; // e.g., "customer", "admin"
+    private String phoneNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
-    private Role role;
+    @OneToOne(mappedBy = "user")
+    private Customer customer;
 
-    @OneToMany(mappedBy = "user")
-    private List<Address> addressList;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Order> orders;
-
-
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role;
 
 }

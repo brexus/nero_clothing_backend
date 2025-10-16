@@ -10,4 +10,5 @@ import lombok.Setter;
 public class OrderItemRequestDto {
     private Integer quantity;
     private Long productVariantId;
+
 }

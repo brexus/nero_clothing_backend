@@ -4,7 +4,6 @@ import com.example.nero_clothing_backend.model.enums.CategoryEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,17 +21,16 @@ public class Product extends BaseModel {
     private String description;
 
     @Column(nullable = false)
-    private Double price;
+    private Long price;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CategoryEnum category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<ProductImage> productImages;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductVariant> productVariantList;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductImage> productImages;
 
 }

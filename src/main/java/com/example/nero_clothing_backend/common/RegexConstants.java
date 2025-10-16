@@ -8,20 +8,13 @@ public class RegexConstants {
     public static final String APARTMENT = "^[0-9]{0,5}$";
     public static final String COUNTRY = "^[A-Za-ząĄćĆęĘłŁńŃóÓśŚżŻźŹ\\s\\-]{0,50}$";
 
-
-
     public static final String PRODUCT_NAME = "^[A-Za-ząĄćĆęĘłŁńŃóÓśŚżŻźŹ.,\\-\\s]{0,50}$";
     public static final String PRODUCT_DESCRIPTION = "^[A-Za-ząĄćĆęĘłŁńŃóÓśŚżŻźŹ.,\\-\\s]{0,50}$";
+
+    public static final String PHONE_NUMBER_REGEX = "^\\+?[0-9]{9,15}$";
+
     public static final String PRODUCT_CATEGORY = "^(TSHIRTS|HOODIES|BOTTOMS|ACCESSORIES)?$";
 
-    public static final String PRICE = "^(\\d+\\.\\d{1,2}|\\d+)?$";
-
-//    public static final String PRODUCT_CATEGORY = "^(TSHIRTS|HOODIES|BOTTOMS|ACCESSORIES)?$";
-
-
-
-
     public static final String STOCK_QUANTITY = "^\\d+$";
-
 
 }

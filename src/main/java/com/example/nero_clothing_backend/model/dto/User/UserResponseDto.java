@@ -1,18 +1,10 @@
 package com.example.nero_clothing_backend.model.dto.User;
 
-import com.example.nero_clothing_backend.model.entity.Address;
-import com.example.nero_clothing_backend.model.entity.Role;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import java.security.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.example.nero_clothing_backend.model.enums.RoleEnum;
 import lombok.Builder;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -24,9 +16,7 @@ public class UserResponseDto {
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
     private String phoneNumber;
-    private Long roleId;
-    private List<Address> addressList;
+    private RoleEnum role;
 
 }

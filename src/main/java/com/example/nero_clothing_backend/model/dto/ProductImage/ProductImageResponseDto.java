@@ -1,8 +1,8 @@
 package com.example.nero_clothing_backend.model.dto.ProductImage;
 
-import com.example.nero_clothing_backend.model.entity.ProductVariant;
 import lombok.Builder;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data

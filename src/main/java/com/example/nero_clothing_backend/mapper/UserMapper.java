@@ -7,29 +7,17 @@ import com.example.nero_clothing_backend.model.entity.User;
 public class UserMapper {
 
     public static User toEntity(UserRequestDto reqDto) {
-
-        if (reqDto == null) {
-            return null;
-        }
-
-        User user = User.builder()
+        return User.builder()
                 .firstName(reqDto.getFirstName())
                 .lastName(reqDto.getLastName())
                 .email(reqDto.getEmail())
                 .phoneNumber(reqDto.getPhoneNumber())
                 .password(reqDto.getPassword())
-                .role(null)
+                .role(reqDto.getRole())
                 .build();
-
-        return user;
     }
 
     public static UserResponseDto toDto(User user) {
-
-        if (user == null) {
-            return null;
-        }
-
         return UserResponseDto.builder()
                 .id(user.getId())
                 .createdAt(user.getCreatedAt())
@@ -37,10 +25,8 @@ public class UserMapper {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .password(user.getPassword())
                 .phoneNumber(user.getPhoneNumber())
-                .roleId(user.getRole() != null ? user.getRole().getId() : null)
-                .addressList(user.getAddressList() != null ? user.getAddressList() : null)
+                .role(user.getRole())
                 .build();
 
     }

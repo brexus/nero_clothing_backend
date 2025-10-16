@@ -8,23 +8,14 @@ public class ProductImageMapper {
 
     public static ProductImage toEntity(ProductImageRequestDto imgDto) {
 
-        if (imgDto == null) {
-            return null;
-        }
-
-        ProductImage prodImg = new ProductImage();
-        prodImg.setImageUrl(imgDto.getImageUrl());
-        prodImg.setAltText(imgDto.getAltText());
-        prodImg.setProduct(null); // Assuming product variant is set later
-
-        return prodImg;
+        return ProductImage.builder()
+                .imageUrl(imgDto.getImageUrl())
+                .altText(imgDto.getAltText())
+                .product(null)
+                .build();
     }
 
     public static ProductImageResponseDto toDto(ProductImage imgDto) {
-
-        if (imgDto == null) {
-            return null;
-        }
 
         return ProductImageResponseDto.builder()
                 .id(imgDto.getId())
@@ -34,6 +25,5 @@ public class ProductImageMapper {
                 .createdAt(imgDto.getCreatedAt())
                 .updatedAt(imgDto.getUpdatedAt())
                 .build();
-
     }
 }

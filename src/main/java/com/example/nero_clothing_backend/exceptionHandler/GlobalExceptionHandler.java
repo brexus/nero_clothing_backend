@@ -1,7 +1,7 @@
 package com.example.nero_clothing_backend.exceptionHandler;
 
-import com.example.nero_clothing_backend.model.dto.Error.ErrorResponseDto;
 import com.example.nero_clothing_backend.exception.*;
+import com.example.nero_clothing_backend.model.dto.Error.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,7 +26,7 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-        private ResponseEntity<ErrorResponseDto> buildErrorResponse(List<Map<String, String>> errorList) {
+    private ResponseEntity<ErrorResponseDto> buildErrorResponse(List<Map<String, String>> errorList) {
         ErrorResponseDto response = ErrorResponseDto.builder()
                 .error("Bad Request")
                 .message("Validation failed")
@@ -36,7 +38,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleValidationErrors(MethodArgumentNotValidException ex) {
         List<Map<String, String>> errors = new ArrayList<>();
@@ -46,8 +47,6 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(errors);
     }
 
-
-    // custom message
     @ExceptionHandler(CustomMessageException.class)
     public ResponseEntity<ErrorResponseDto> handleCustomMessageException(CustomMessageException ex) {
         return ResponseEntity
@@ -55,7 +54,6 @@ public class GlobalExceptionHandler {
                 .body(handleGenericException(ex, HttpStatus.BAD_REQUEST));
     }
 
-    // address
     @ExceptionHandler(AddressNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleAddressNotFound(AddressNotFoundException ex) {
         return ResponseEntity
@@ -63,7 +61,6 @@ public class GlobalExceptionHandler {
                 .body(handleGenericException(ex, HttpStatus.NOT_FOUND));
     }
 
-    // user
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleUserNotFound(UserNotFoundException ex) {
         return ResponseEntity
@@ -78,7 +75,6 @@ public class GlobalExceptionHandler {
                 .body(handleGenericException(ex, HttpStatus.CONFLICT));
     }
 
-    // product image
     @ExceptionHandler(ProductImageNotFound.class)
     public ResponseEntity<ErrorResponseDto> handleProductImageNotFound(ProductImageNotFound ex) {
         return ResponseEntity
@@ -86,7 +82,6 @@ public class GlobalExceptionHandler {
                 .body(handleGenericException(ex, HttpStatus.NOT_FOUND));
     }
 
-    //product
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleProductNotFound(ProductNotFoundException ex) {
         return ResponseEntity
@@ -94,15 +89,13 @@ public class GlobalExceptionHandler {
                 .body(handleGenericException(ex, HttpStatus.NOT_FOUND));
     }
 
-
-    //product variant
     @ExceptionHandler(ProductVariantNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleProductVariantNotFoundException(ProductVariantNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(handleGenericException(ex, HttpStatus.NOT_FOUND));
     }
-    //order
+
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleOrderNotFoundException(OrderNotFoundException ex) {
         return ResponseEntity
@@ -110,7 +103,6 @@ public class GlobalExceptionHandler {
                 .body(handleGenericException(ex, HttpStatus.NOT_FOUND));
     }
 
-    //product variant stock
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<ErrorResponseDto> handleInsufficientStockException(InsufficientStockException ex) {
         return ResponseEntity
@@ -118,7 +110,6 @@ public class GlobalExceptionHandler {
                 .body(handleGenericException(ex, HttpStatus.CONFLICT));
     }
 
-    // category
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleCategoryNotFound(CategoryNotFoundException ex) {
         return ResponseEntity

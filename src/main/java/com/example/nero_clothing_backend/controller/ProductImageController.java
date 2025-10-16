@@ -14,37 +14,35 @@ import java.util.Map;
 @RestController
 @RequestMapping("/product/image")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class ProductImageController {
     private final ProductImageService productImageService;
 
     @PostMapping("/")
-    private ResponseEntity<ProductImageResponseDto> createProductImage(@RequestBody ProductImageRequestDto reqDto) {
+    public ResponseEntity<ProductImageResponseDto> createProductImage(@RequestBody ProductImageRequestDto reqDto) {
         ProductImageResponseDto resDto = productImageService.createProductImage(reqDto);
-        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
 
-    // O TOOOOOOOOOOO!!!!!!!!!!!!!!!!!
     @GetMapping("/{id}")
-    private ResponseEntity<List<ProductImageResponseDto>>getProductImagesByProductId(@PathVariable Long id) {
+    public ResponseEntity<List<ProductImageResponseDto>> getProductImagesByProductId(@PathVariable Long id) {
         List<ProductImageResponseDto> imgList = productImageService.getProductImagesByProductId(id);
         return ResponseEntity.status(HttpStatus.OK).body(imgList);
     }
 
     @GetMapping("/")
-    private ResponseEntity<List<ProductImageResponseDto>> getAllProductImages() {
+    public ResponseEntity<List<ProductImageResponseDto>> getAllProductImages() {
         List<ProductImageResponseDto> imgList = productImageService.getAllProductImages();
         return ResponseEntity.status(HttpStatus.OK).body(imgList);
     }
 
     @PatchMapping("/{id}")
-    private ResponseEntity<ProductImageResponseDto> updatePartialProductImage(@PathVariable Long id, @RequestBody ProductImageRequestDto reqDto) {
+    public ResponseEntity<ProductImageResponseDto> updatePartialProductImage(@PathVariable Long id, @RequestBody ProductImageRequestDto reqDto) {
         ProductImageResponseDto resDto = productImageService.updatePartialProductImage(id, reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<Map<String, String>> deleteProductImage(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> deleteProductImage(@PathVariable Long id) {
         productImageService.deleteProductImage(id);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Product image with id " + id + " deleted successfully"));
     }

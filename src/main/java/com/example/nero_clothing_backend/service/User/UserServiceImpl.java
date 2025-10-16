@@ -1,18 +1,13 @@
 package com.example.nero_clothing_backend.service.User;
 
+import com.example.nero_clothing_backend.exception.EmailAlreadyExistsException;
 import com.example.nero_clothing_backend.exception.UserNotFoundException;
-import com.example.nero_clothing_backend.mapper.AddressMapper;
+import com.example.nero_clothing_backend.mapper.UserMapper;
 import com.example.nero_clothing_backend.model.dto.User.UserPatchDto;
 import com.example.nero_clothing_backend.model.dto.User.UserRequestDto;
 import com.example.nero_clothing_backend.model.dto.User.UserResponseDto;
-//import com.example.nero_clothing_backend.exception.EmailAlreadyExistsException;
-import com.example.nero_clothing_backend.exception.AddressNotFoundException;
-import com.example.nero_clothing_backend.exception.EmailAlreadyExistsException;
-import com.example.nero_clothing_backend.mapper.UserMapper;
-import com.example.nero_clothing_backend.model.entity.Address;
-import com.example.nero_clothing_backend.model.entity.Role;
 import com.example.nero_clothing_backend.model.entity.User;
-import com.example.nero_clothing_backend.repository.AddressRepository;
+import com.example.nero_clothing_backend.model.enums.RoleEnum;
 import com.example.nero_clothing_backend.repository.RoleRepository;
 import com.example.nero_clothing_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +26,8 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto createUser(UserRequestDto reqDto) {
         User user = UserMapper.toEntity(reqDto);
 
-        Role role = roleRepository.findById(1L).orElseThrow(); // id=1 -> ROLE_USER
-        user.setRole(role);
+        user.setRole(RoleEnum.USER);
 
-        // check if email already exists
         if (userRepository.existsByEmail(reqDto.getEmail())) {
             throw new EmailAlreadyExistsException();
         }
@@ -69,28 +62,27 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
-        if(reqDto.getFirstName() != null)
+        if (reqDto.getFirstName() != null)
             user.setFirstName(reqDto.getFirstName());
 
 
-        if(reqDto.getLastName() != null)
+        if (reqDto.getLastName() != null)
             user.setLastName(reqDto.getLastName());
 
 
-        if(reqDto.getEmail() != null)
+        if (reqDto.getEmail() != null)
             user.setEmail(reqDto.getEmail());
 
 
-        if(reqDto.getPassword() != null)
+        if (reqDto.getPassword() != null)
             user.setPassword(reqDto.getPassword());
 
-        if(reqDto.getPhoneNumber() != null) {
+        if (reqDto.getPhoneNumber() != null) {
             user.setPhoneNumber(reqDto.getPhoneNumber());
         }
 
-        if(reqDto.getRoleId() != null) {
-            Role reqRole = roleRepository.findById(reqDto.getRoleId()).orElseThrow();
-            user.setRole(reqRole);
+        if (reqDto.getRoleId() != null) {
+            user.setRole(RoleEnum.USER);
         }
 
         User updatedUser = userRepository.save(user);
@@ -105,6 +97,5 @@ public class UserServiceImpl implements UserService {
 
         userRepository.delete(user);
     }
-
 
 }
