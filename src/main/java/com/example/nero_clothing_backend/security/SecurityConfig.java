@@ -75,7 +75,7 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/product/**",
                                 "/category/**",
-                                "/order/**",
+                                "/order/guest/**",
                                 "/product-variant/**",
                                 "/order-address/**"
                         ).permitAll()

@@ -5,10 +5,7 @@ import com.example.nero_clothing_backend.exception.OrderNotFoundException;
 import com.example.nero_clothing_backend.mapper.CustomerOrderMapper;
 import com.example.nero_clothing_backend.model.dto.CustomerOrder.CustomerOrderRequestDto;
 import com.example.nero_clothing_backend.model.dto.CustomerOrder.CustomerOrderResponseDto;
-import com.example.nero_clothing_backend.model.entity.CustomerOrder;
-import com.example.nero_clothing_backend.model.entity.OrderAddress;
-import com.example.nero_clothing_backend.model.entity.OrderItem;
-import com.example.nero_clothing_backend.model.entity.ProductVariant;
+import com.example.nero_clothing_backend.model.entity.*;
 import com.example.nero_clothing_backend.model.enums.OrderStatus;
 import com.example.nero_clothing_backend.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -29,15 +26,14 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
     private final UserRepository userRepository;
     private final ProductVariantRepository productVariantRepository;
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     @Override
     @Transactional
     public CustomerOrderResponseDto createCustomerOrder(CustomerOrderRequestDto reqDto) {
-        // (1). Create empty order
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         CustomerOrder newOrder = new CustomerOrder();
 
-        // (2) set shipping address
         OrderAddress newShippingAddress = OrderAddress.builder()
                 .street(reqDto.getShippingAddress().getStreet())
                 .city(reqDto.getShippingAddress().getCity())
@@ -50,7 +46,6 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
         orderAddressRepository.save(newShippingAddress);
         newOrder.setShippingAddress(newShippingAddress);
 
-        // (3) check stock availability and create order items
 
         List<OrderItem> orderItemList = new ArrayList<OrderItem>();
 
@@ -58,8 +53,6 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
             ProductVariant pv = productVariantRepository.findById(item.getProductVariantId()).orElseThrow();
 
             if (hasSufficientStock(pv, item.getQuantity())) {
-                // (A) if stock is enough
-
                 OrderItem oi = OrderItem.builder()
                         .customerOrder(newOrder)
                         .productVariant(pv)
@@ -72,74 +65,58 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
                 pv.setStockQuantity(pv.getStockQuantity() - item.getQuantity());
                 productVariantRepository.save(pv);
             } else {
-                // (B) if stock is not enough
                 throw new InsufficientStockException(pv.getId(), pv.getStockQuantity(), item.getQuantity());
             }
         }
 
         newOrder.setItems(orderItemList);
 
-        // (4) Set CUSTOMER (check if customer with given email already exists)
 
-//        Customer customer = customerRepository.findByGuestEmail(reqDto.getEmail());
+        Customer customer = null;
 
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName())) {
+            String userEmail = authentication.getName();
+            User user = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new RuntimeException("User not found for email: " + userEmail));
 
-        // (a) customer nie istnieje - nigdy nie zamawial - tworzymy nowego guest'a
-        // (b) user istnieje ale nie ma przypisanego customer'a
-        // (c) user istnieje i ma przypisanego customer'a
+            customer = customerRepository.findByUserId(user.getId())
+                    .orElseGet(() -> {
+                        Customer newCustomer = Customer.builder()
+                                .user(user)
+                                .build();
+                        return customerRepository.save(newCustomer);
+                    });
 
-        // sprawdzić jak w springu się sprawdza kto jest zalogowany
+        } else {
+            customer = customerRepository.findByGuestEmail(reqDto.getEmail());
 
-        String email = authentication.getName();
+            if (customer == null) {
+                customer = Customer.builder()
+                        .guestEmail(reqDto.getEmail())
+                        .build();
 
+                customerRepository.save(customer);
+            }
+        }
+        newOrder.setCustomer(customer);
 
-//        if(customer == null) {
-//            customer = Customer.builder()
-//                    .guestEmail(reqDto.getEmail())
-//                    .build();
-//
-//            customerRepository.save(customer);
-//        }
-
-
-//        User user = userRepository.getByEmail(reqDto.getEmail());
-
-
-//        if(user != null) {
-//            customer.setUser(user);
-//
-//        }
-//
-//
-//        if (customer == null) {
-//            customer = Customer.builder()
-//                    .guestEmail(reqDto.getEmail())
-//                    .build();
-//
-//            customerRepository.save(customer);
-//        }
-
-
-//        newOrder.setCustomer(customer);
         newOrder.setFirstName(reqDto.getFirstName());
         newOrder.setLastName(reqDto.getLastName());
         newOrder.setPhoneNumber(reqDto.getPhoneNumber());
 
-        // (4) Set USER if userId is provided - future
 
-        // (5) status -> "NEW"
         newOrder.setStatus(OrderStatus.NEW);
-
-        // (6) calculate total amount
+        newOrder.setPaymentMethod(reqDto.getPaymentMethod());
 
         Long totalAmount = newOrder.getItems().stream().mapToLong(OrderItem::getTotalPrice).sum();
         newOrder.setTotalAmount(totalAmount);
 
-        // (7) set shippingDate and deliveryDate to null for now
+
         newOrder.setShippingDate(null);
         newOrder.setDeliveryDate(null);
 
-        // (8) save to DB
+
+
         CustomerOrder savedOrder = orderRepository.save(newOrder);
 
         return CustomerOrderMapper.toDto(savedOrder);

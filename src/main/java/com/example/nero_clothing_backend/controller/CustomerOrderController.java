@@ -16,8 +16,14 @@ public class CustomerOrderController {
 
     private final CustomerOrderService customerOrderService;
 
-    @PostMapping("/")
-    public ResponseEntity<CustomerOrderResponseDto> createCustomerOrder(@Valid @RequestBody CustomerOrderRequestDto reqDto) {
+    @PostMapping("/guest")
+    public ResponseEntity<CustomerOrderResponseDto> createGuestCustomerOrder(@Valid @RequestBody CustomerOrderRequestDto reqDto) {
+        CustomerOrderResponseDto resDto = customerOrderService.createCustomerOrder(reqDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
+    }
+
+    @PostMapping("/auth")
+    public ResponseEntity<CustomerOrderResponseDto> createAuthenticatedCustomerOrder(@Valid @RequestBody CustomerOrderRequestDto reqDto) {
         CustomerOrderResponseDto resDto = customerOrderService.createCustomerOrder(reqDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }

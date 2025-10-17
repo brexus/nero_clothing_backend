@@ -14,7 +14,6 @@ import lombok.*;
 @NoArgsConstructor
 public class Customer extends BaseModel {
 
-    @Column(unique = true)
     private String guestEmail;
 
     @OneToOne
