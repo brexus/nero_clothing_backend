@@ -1,9 +1,13 @@
 package com.example.nero_clothing_backend.auth;
 
 
+import com.example.nero_clothing_backend.model.dto.User.UserRequestDto;
+import com.example.nero_clothing_backend.model.dto.User.UserResponseDto;
 import com.example.nero_clothing_backend.model.entity.User;
 import com.example.nero_clothing_backend.repository.UserRepository;
 import com.example.nero_clothing_backend.security.JwtService;
+import com.example.nero_clothing_backend.service.User.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,26 +28,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final UserService userService;
+
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDto req) {
-        if (userRepository.existsByEmail(req.getEmail())) {
-            return ResponseEntity.badRequest().body("Email is already in use.");
-        }
-
-        User user = User.builder()
-                .email(req.getEmail())
-                .password(passwordEncoder.encode(req.getPassword()))
-                .build();
-        userRepository.save(user);
-
-        UserDetails ud = userDetailsService.loadUserByUsername(user.getEmail());
-        String token = jwtService.generateToken(ud);
-        return ResponseEntity.ok(new AuthResponse(token));
+    public ResponseEntity<?> register(@Valid @RequestBody UserRequestDto reqDto) {
+        UserResponseDto resDto = userService.createUser(reqDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
 
     @PostMapping("/login")

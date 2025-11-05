@@ -3,8 +3,10 @@ package com.example.nero_clothing_backend.service.CustomerOrder;
 import com.example.nero_clothing_backend.exception.InsufficientStockException;
 import com.example.nero_clothing_backend.exception.OrderNotFoundException;
 import com.example.nero_clothing_backend.mapper.CustomerOrderMapper;
+import com.example.nero_clothing_backend.mapper.OrderAddressMapper;
 import com.example.nero_clothing_backend.model.dto.CustomerOrder.CustomerOrderRequestDto;
 import com.example.nero_clothing_backend.model.dto.CustomerOrder.CustomerOrderResponseDto;
+import com.example.nero_clothing_backend.model.dto.OrderItem.OrderItemRequestDto;
 import com.example.nero_clothing_backend.model.entity.*;
 import com.example.nero_clothing_backend.model.enums.OrderStatus;
 import com.example.nero_clothing_backend.repository.*;
@@ -16,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,97 +34,45 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
     @Override
     @Transactional
     public CustomerOrderResponseDto createCustomerOrder(CustomerOrderRequestDto reqDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        OrderAddress newShippingAddress = OrderAddressMapper.toEntity(reqDto.getShippingAddress());
+        orderAddressRepository.save(newShippingAddress);
 
-        CustomerOrder newOrder = new CustomerOrder();
+        List<Long> itemsIds = reqDto.getItems().stream()
+                .map(OrderItemRequestDto::getProductVariantId)
+                .toList();
 
-        OrderAddress newShippingAddress = OrderAddress.builder()
-                .street(reqDto.getShippingAddress().getStreet())
-                .city(reqDto.getShippingAddress().getCity())
-                .apartment(reqDto.getShippingAddress().getApartment())
-                .zipCode(reqDto.getShippingAddress().getZipCode())
-                .country(reqDto.getShippingAddress().getCountry())
-                .building(reqDto.getShippingAddress().getBuilding())
+        Map<Long, ProductVariant> productVariantsMap = productVariantRepository.findAllByIdIn(itemsIds)
+                .stream()
+                .collect(Collectors.toMap(ProductVariant::getId, pv -> pv));
+
+        Customer customer = getOrCreateCustomer(reqDto.getEmail());
+
+        CustomerOrder newOrder = CustomerOrder.builder()
+                .customer(customer)
+                .firstName(reqDto.getFirstName())
+                .lastName(reqDto.getLastName())
+                .phoneNumber(reqDto.getPhoneNumber())
+                .shippingAddress(newShippingAddress)
+                .paymentMethod(reqDto.getPaymentMethod())
+                .status(OrderStatus.NEW)
+                .shippingDate(null)
+                .deliveryDate(null)
+                .items(new ArrayList<>())
+                .totalAmount(0L)
                 .build();
 
-        orderAddressRepository.save(newShippingAddress);
-        newOrder.setShippingAddress(newShippingAddress);
-
-
-        List<OrderItem> orderItemList = new ArrayList<OrderItem>();
-
-        for (var item : reqDto.getItems()) {
-            ProductVariant pv = productVariantRepository.findById(item.getProductVariantId()).orElseThrow();
-
-            if (hasSufficientStock(pv, item.getQuantity())) {
-                OrderItem oi = OrderItem.builder()
-                        .customerOrder(newOrder)
-                        .productVariant(pv)
-                        .unitPrice(pv.getProduct().getPrice())
-                        .quantity(item.getQuantity())
-                        .totalPrice(pv.getProduct().getPrice() * item.getQuantity())
-                        .build();
-
-                orderItemList.add(oi);
-                pv.setStockQuantity(pv.getStockQuantity() - item.getQuantity());
-                productVariantRepository.save(pv);
-            } else {
-                throw new InsufficientStockException(pv.getId(), pv.getStockQuantity(), item.getQuantity());
-            }
-        }
+        List<OrderItem> orderItemList = reqDto.getItems().stream()
+                .map(item -> verifyStockAndAddToOrderItemList(productVariantsMap, item, newOrder))
+                .toList();
 
         newOrder.setItems(orderItemList);
+        newOrder.setTotalAmount(orderItemList.stream()
+                .mapToLong(OrderItem::getTotalPrice)
+                .sum());
 
-
-        Customer customer = null;
-
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName())) {
-            String userEmail = authentication.getName();
-            User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new RuntimeException("User not found for email: " + userEmail));
-
-            customer = customerRepository.findByUserId(user.getId())
-                    .orElseGet(() -> {
-                        Customer newCustomer = Customer.builder()
-                                .user(user)
-                                .build();
-                        return customerRepository.save(newCustomer);
-                    });
-
-        } else {
-            customer = customerRepository.findByGuestEmail(reqDto.getEmail());
-
-            if (customer == null) {
-                customer = Customer.builder()
-                        .guestEmail(reqDto.getEmail())
-                        .build();
-
-                customerRepository.save(customer);
-            }
-        }
-        newOrder.setCustomer(customer);
-
-        newOrder.setFirstName(reqDto.getFirstName());
-        newOrder.setLastName(reqDto.getLastName());
-        newOrder.setPhoneNumber(reqDto.getPhoneNumber());
-
-
-        newOrder.setStatus(OrderStatus.NEW);
-        newOrder.setPaymentMethod(reqDto.getPaymentMethod());
-
-        Long totalAmount = newOrder.getItems().stream().mapToLong(OrderItem::getTotalPrice).sum();
-        newOrder.setTotalAmount(totalAmount);
-
-
-        newOrder.setShippingDate(null);
-        newOrder.setDeliveryDate(null);
-
-
-
-        CustomerOrder savedOrder = orderRepository.save(newOrder);
-
-        return CustomerOrderMapper.toDto(savedOrder);
+        return CustomerOrderMapper.toDto(orderRepository.save(newOrder));
     }
+
 
     @Override
     @Deprecated(forRemoval = true)
@@ -134,5 +86,55 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
     @Override
     public Boolean hasSufficientStock(ProductVariant productVariant, Integer requestQuantity) {
         return productVariant.getStockQuantity() >= requestQuantity;
+    }
+
+    private Customer getOrCreateCustomer(String guestEmail) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (isAuthenticated(authentication)) {
+            String userEmail = authentication.getName();
+            User user = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new RuntimeException("User not found for email: " + userEmail));
+
+            return customerRepository.findByUserId(user.getId())
+                    .orElseGet(() -> {
+                        Customer newCustomer = Customer.builder()
+                                .user(user)
+                                .build();
+                        return customerRepository.save(newCustomer);
+                    });
+        } else {
+            return customerRepository.findByGuestEmail(guestEmail)
+                    .orElseGet(() -> {
+                        Customer newCustomer = Customer.builder()
+                                .guestEmail(guestEmail)
+                                .build();
+                        return customerRepository.save(newCustomer);
+                    });
+        }
+    }
+
+    private OrderItem verifyStockAndAddToOrderItemList(Map<Long, ProductVariant> productVariantsMap,
+                                                       OrderItemRequestDto item,
+                                                       CustomerOrder newOrder) {
+        ProductVariant pv = productVariantsMap.get(item.getProductVariantId());
+
+        if (!hasSufficientStock(pv, item.getQuantity())) {
+            throw new InsufficientStockException(pv.getId(), pv.getStockQuantity(), item.getQuantity());
+        }
+
+        OrderItem oi = OrderItem.builder()
+                .customerOrder(newOrder)
+                .productVariant(pv)
+                .unitPrice(pv.getProduct().getPrice())
+                .quantity(item.getQuantity())
+                .totalPrice(pv.getProduct().getPrice() * item.getQuantity())
+                .build();
+        pv.setStockQuantity(pv.getStockQuantity() - item.getQuantity());
+        productVariantRepository.save(pv);
+        return oi;
+    }
+
+    private boolean isAuthenticated(Authentication authentication) {
+        return (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName()));
     }
 }

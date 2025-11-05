@@ -1,7 +1,6 @@
 package com.example.nero_clothing_backend.model.dto.Customer;
 
 import com.example.nero_clothing_backend.model.entity.User;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

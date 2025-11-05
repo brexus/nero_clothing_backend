@@ -5,6 +5,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 public class EmailAlreadyExistsException extends RuntimeException {
     public EmailAlreadyExistsException() {
-        super("This email address has already been used. Please choose another one.");
+        super("Email is already in use.");
     }
 }

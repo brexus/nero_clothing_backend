@@ -70,7 +70,7 @@ public class SecurityConfig {
                 })
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 👇 te endpointy będą dostępne bez logowania
+                        // te endpointy będą dostępne bez logowania
                         .requestMatchers(
                                 "/auth/**",
                                 "/product/**",

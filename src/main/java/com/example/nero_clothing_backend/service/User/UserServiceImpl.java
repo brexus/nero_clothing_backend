@@ -11,6 +11,7 @@ import com.example.nero_clothing_backend.model.enums.RoleEnum;
 import com.example.nero_clothing_backend.repository.RoleRepository;
 import com.example.nero_clothing_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,18 +22,25 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDto createUser(UserRequestDto reqDto) {
-        User user = UserMapper.toEntity(reqDto);
-
-        user.setRole(RoleEnum.USER);
-
         if (userRepository.existsByEmail(reqDto.getEmail())) {
             throw new EmailAlreadyExistsException();
         }
 
+        User user = User.builder()
+                .firstName(reqDto.getFirstName())
+                .lastName(reqDto.getLastName())
+                .phoneNumber(reqDto.getPhoneNumber())
+                .email(reqDto.getEmail())
+                .role(RoleEnum.USER)
+                .password(passwordEncoder.encode(reqDto.getPassword()))
+                .build();
+
         User savedUser = userRepository.save(user);
+
         return UserMapper.toDto(savedUser);
     }
 

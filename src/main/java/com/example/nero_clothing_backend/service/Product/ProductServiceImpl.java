@@ -167,19 +167,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private boolean isPatchDtoEmpty(ProductPatchDto reqDto) {
-        String s = "ala ma kota";
-        List<String> lista = Arrays.asList(s.split(" ")).reversed();
-        lista = lista.stream()
-                .filter(str -> str != null && !str.isEmpty())
-                .collect(toList());
-
-        List<String> list = Arrays.asList(s.split("\\s+"))
-                .stream()
-                .filter(str -> !str.isEmpty())
-                .toList()
-                .reversed();
-
-
         return (reqDto.getName() == null || reqDto.getName().isEmpty()) &&
                 (reqDto.getDescription() == null || reqDto.getDescription().isEmpty()) &&
                 (reqDto.getPrice() == null) &&
