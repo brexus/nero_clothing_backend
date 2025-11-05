@@ -1,6 +1,8 @@
 # 🛒 NERO CLOTHING - E-Commerce Store
 A fullstack e-commerce web application focused exclusively on clothing products. Users can browse products, select sizes, manage their cart, create an account and place orders.
 
+#### FRONTEND - https://github.com/brexus/nero_clothing_frontend
+
 ### Main Features
 - 👕 Product catalog with multiple available sizes per item
 - 🏷️ Category browsing + pagination for product listing
